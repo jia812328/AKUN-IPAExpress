@@ -1,0 +1,103 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title size="large">AKUN</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-top">
+  <div class="page-header">
+    <h1>IPA 文件</h1>
+    <p>管理你的应用安装包与资源文件</p>
+  </div>
+
+  <!-- 快捷操作 -->
+  <div style="padding: 0 20px 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+    <ion-button expand="block" class="ios-btn" color="primary" style="flex:1; min-width: 100px;" (click)="importFile()">
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+      导入文件
+    </ion-button>
+    <ion-button expand="block" class="ios-btn" color="tertiary" style="flex:1; min-width: 100px;" (click)="importFromUrl()">
+      <ion-icon name="cloud-download-outline" slot="start"></ion-icon>
+      下载
+    </ion-button>
+    <ion-button expand="block" class="ios-btn" color="success" style="flex:1; min-width: 100px;" (click)="selectInstalledApp()">
+      <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
+      选择应用
+    </ion-button>
+    <ion-button expand="block" class="ios-btn" color="medium" style="flex:1; min-width: 100px;" routerLink="/ipa-files/file-manager">
+      <ion-icon name="folder-open-outline" slot="start"></ion-icon>
+      手机储存
+    </ion-button>
+  </div>
+
+  <!-- 统计卡片 -->
+  <div class="glass-card" style="margin: 0 20px 16px; padding: 14px; display: flex; justify-content: space-around; align-items: center;">
+    <div style="text-align: center;">
+      <div style="font-size: 24px; font-weight: 700; color: #007aff;">{{ ipaCount }}</div>
+      <div style="font-size: 11px; color: var(--ion-color-medium);">IPA 文件</div>
+    </div>
+    <div style="width:1px; height:30px; background: rgba(0,0,0,0.05);"></div>
+    <div style="text-align: center;">
+      <div style="font-size: 24px; font-weight: 700; color: #34c759;">{{ signedCount }}</div>
+      <div style="font-size: 11px; color: var(--ion-color-medium);">已签名</div>
+    </div>
+    <div style="width:1px; height:30px; background: rgba(0,0,0,0.05);"></div>
+    <div style="text-align: center;">
+      <div style="font-size: 24px; font-weight: 700; color: #ff9500;">{{ totalSize }}</div>
+      <div style="font-size: 11px; color: var(--ion-color-medium);">总大小</div>
+    </div>
+  </div>
+
+  <!-- 分类筛选 -->
+  <div style="padding: 0 20px 12px; display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
+    <ion-button fill="clear" size="small" (click)="setFilter('all')" [style.font-weight]="currentFilter === 'all' ? '700' : '400'" style="--border-radius: 20px; flex-shrink: 0;">
+      全部文件 ({{ allFiles.length }})
+    </ion-button>
+    <ion-button fill="clear" size="small" (click)="setFilter('ipa')" [style.font-weight]="currentFilter === 'ipa' ? '700' : '400'" style="--border-radius: 20px; flex-shrink: 0;">
+      IPA ({{ ipaCount }})
+    </ion-button>
+    <ion-button fill="clear" size="small" (click)="setFilter('dylib')" [style.font-weight]="currentFilter === 'dylib' ? '700' : '400'" style="--border-radius: 20px; flex-shrink: 0;">
+      Dylib ({{ dylibCount }})
+    </ion-button>
+    <ion-button fill="clear" size="small" (click)="setFilter('p12')" [style.font-weight]="currentFilter === 'p12' ? '700' : '400'" style="--border-radius: 20px; flex-shrink: 0;">
+      证书 ({{ certCount }})
+    </ion-button>
+    <ion-button fill="clear" size="small" (click)="setFilter('mobileprovision')" [style.font-weight]="currentFilter === 'mobileprovision' ? '700' : '400'" style="--border-radius: 20px; flex-shrink: 0;">
+      描述文件 ({{ provCount }})
+    </ion-button>
+  </div>
+
+  <!-- 搜索 -->
+  <div style="padding: 0 20px 12px;">
+    <ion-searchbar placeholder="搜索文件..." [(ngModel)]="searchQuery" (ionInput)="filterFiles()" style="--border-radius: 12px; --box-shadow: none; --background: rgba(0,0,0,0.04);"></ion-searchbar>
+  </div>
+
+  <!-- 空状态 -->
+  <div class="empty-state" *ngIf="filteredFiles.length === 0">
+    <ion-icon name="document-text-outline"></ion-icon>
+    <h3>还没有文件</h3>
+    <p>点击上方按钮导入文件，<br>或从手机储存 / 已安装应用中导入</p>
+  </div>
+
+  <!-- 文件列表 -->
+  <ion-list lines="none" *ngIf="filteredFiles.length > 0">
+    <div class="file-item" *ngFor="let file of filteredFiles; let i = index" (click)="showDetail(file)">
+      <div class="file-icon" [style.background]="getFileColor(file.type)" [style.color]="getFileIconColor(file.type)">
+        <ion-icon [name]="getFileIcon(file.type)"></ion-icon>
+      </div>
+      <div class="file-info">
+        <div class="name">{{ file.name }}</div>
+        <div class="meta">
+          <span class="status-badge" [ngClass]="file.status">{{ file.statusText }}</span>
+          <span class="type-badge" style="font-size: 10px; padding: 1px 6px; border-radius: 4px; background: rgba(0,0,0,0.05);">{{ file.type.toUpperCase() }}</span>
+          {{ file.size }} · {{ file.date }}
+        </div>
+      </div>
+      <div class="file-action">
+        <ion-button fill="clear" size="small" (click)="deleteFile(i); $event.stopPropagation()">
+          <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-list>
+</ion-content>

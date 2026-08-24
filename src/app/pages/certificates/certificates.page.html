@@ -1,0 +1,67 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title size="large">证书</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-top">
+  <div class="page-header">
+    <h1>证书</h1>
+    <p>管理签名证书和描述文件</p>
+  </div>
+
+  <!-- 证书区 -->
+  <div style="padding: 0 20px 8px;">
+    <h3 style="font-size: 13px; font-weight: 600; color: var(--ion-color-medium); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">签名证书 (p12)</h3>
+  </div>
+
+  <div class="empty-state" *ngIf="certList.length === 0" style="padding: 30px 24px;">
+    <ion-icon name="key-outline"></ion-icon>
+    <h3>没有证书</h3>
+    <p>在「IPA 文件」页面导入 .p12 证书文件</p>
+  </div>
+
+  <ion-list lines="none" *ngIf="certList.length > 0">
+    <div class="file-item" *ngFor="let cert of certList; let i = index" (click)="showDetail(cert)">
+      <div class="file-icon p12">
+        <ion-icon name="key-outline"></ion-icon>
+      </div>
+      <div class="file-info">
+        <div class="name">{{ cert.name }}</div>
+        <div class="meta">{{ cert.size }} · {{ cert.date }}</div>
+      </div>
+      <div class="file-action">
+        <ion-button fill="clear" size="small" (click)="deleteCert(cert); $event.stopPropagation()">
+          <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-list>
+
+  <div style="padding: 20px 20px 8px;">
+    <h3 style="font-size: 13px; font-weight: 600; color: var(--ion-color-medium); text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">描述文件 (mobileprovision)</h3>
+  </div>
+
+  <div class="empty-state" *ngIf="provList.length === 0" style="padding: 30px 24px;">
+    <ion-icon name="document-outline"></ion-icon>
+    <h3>没有描述文件</h3>
+    <p>在「IPA 文件」页面导入 .mobileprovision 文件</p>
+  </div>
+
+  <ion-list lines="none" *ngIf="provList.length > 0">
+    <div class="file-item" *ngFor="let prov of provList; let i = index" (click)="showDetail(prov)">
+      <div class="file-icon mobileprovision">
+        <ion-icon name="document-text-outline"></ion-icon>
+      </div>
+      <div class="file-info">
+        <div class="name">{{ prov.name }}</div>
+        <div class="meta">{{ prov.size }} · {{ prov.date }}</div>
+      </div>
+      <div class="file-action">
+        <ion-button fill="clear" size="small" (click)="deleteProv(prov); $event.stopPropagation()">
+          <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-list>
+</ion-content>
