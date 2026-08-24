@@ -14,7 +14,7 @@ jobs:
       - name: 设置 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22  # 整加有要！ Angular 22 需要此级开不低于20
 
       - name: 安装依赖
         run: |
