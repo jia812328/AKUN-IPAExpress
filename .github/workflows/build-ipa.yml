@@ -1,11 +1,11 @@
 name: 编译 AKUN IPA
 
 on:
-  workflow_dispatch:  # 手动触发，点一下按钮就行
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest  # GitHub 提供的免费 Mac 虚拟机
+    runs-on: macos-latest
 
     steps:
       - name: 检出代码
@@ -14,7 +14,7 @@ jobs:
       - name: 设置 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22  # 整加有要！ Angular 22 需要此级开不低于20
+          node-version: 22
 
       - name: 安装依赖
         run: |
@@ -24,15 +24,15 @@ jobs:
       - name: 构建 Web 资源
         run: npx ng build
 
-      - name: 同步 iOS 项目
-        run: npx cap sync ios
+      - name: 复制 Web 资源到 iOS 项目
+        run: npx cap copy ios
 
       - name: 编译未签名 IPA
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath archive App
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath archive.xcarchive archive
           mkdir -p Payload
-          mv archive.xcarchive/Products/Applications/App.app Payload/
+          cp -r archive.xcarchive/Products/Applications/App.app Payload/
           zip -r AKUN.ipa Payload/
           mv AKUN.ipa ../../
 
