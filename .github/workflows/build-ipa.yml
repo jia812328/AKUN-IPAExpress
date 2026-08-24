@@ -30,7 +30,7 @@ jobs:
       - name: 编译未签名 IPA
         run: |
           cd ios/App
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath archive.xcarchive archive
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath archive.xcarchive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO archive
           mkdir -p Payload
           cp -r archive.xcarchive/Products/Applications/App.app Payload/
           zip -r AKUN.ipa Payload/
