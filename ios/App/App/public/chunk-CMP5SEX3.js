@@ -1,0 +1,1 @@
+import {a2 as n$1}from'./main-37T7ZRC3.js';var n=()=>{if(n$1!==void 0)return n$1.Capacitor};export{n};

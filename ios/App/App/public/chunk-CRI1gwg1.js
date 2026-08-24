@@ -1,0 +1,1 @@
+import {C as os}from'./main-37T7ZRC3.js';var p=(t,r,n)=>{let e=t==null?0:t.toString().length,o=c(e,r);if(n===void 0)return o;try{return n(e,r)}catch(i){return os("[ion-input] - Exception in provided `counterFormatter`:",i),o}},c=(t,r)=>`${t} / ${r}`;export{p};
