@@ -1,0 +1,63 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title size="large">已安装</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-top">
+  <div class="page-header">
+    <h1>已安装</h1>
+    <p>管理已签名的应用</p>
+  </div>
+
+  <div class="glass-card" style="margin: 0 20px 16px; padding: 16px; display: flex; justify-content: space-around;">
+    <div style="text-align: center;">
+      <div style="font-size: 28px; font-weight: 700; color: #007aff;">{{ installedApps.length }}</div>
+      <div style="font-size: 12px; color: var(--ion-color-medium);">已安装</div>
+    </div>
+    <div style="width: 1px; background: rgba(0,0,0,0.05);"></div>
+    <div style="text-align: center;">
+      <div style="font-size: 28px; font-weight: 700; color: #34c759;">{{ signedCount }}</div>
+      <div style="font-size: 12px; color: var(--ion-color-medium);">已签名</div>
+    </div>
+    <div style="width: 1px; background: rgba(0,0,0,0.05);"></div>
+    <div style="text-align: center;">
+      <div style="font-size: 28px; font-weight: 700; color: #ff9500;">{{ expiredCount }}</div>
+      <div style="font-size: 12px; color: var(--ion-color-medium);">即将到期</div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="installedApps.length === 0">
+    <ion-icon name="apps-outline"></ion-icon>
+    <h3>还没有安装应用</h3>
+    <p>签名完成后可从签名历史中安装，<br>或点击下方按钮安装</p>
+    <ion-button fill="outline" class="ios-btn" color="primary" style="--border-radius: 24px; height: 44px; font-size: 14px;">
+      <ion-icon name="folder-open-outline" slot="start"></ion-icon>
+      浏览本地安装包
+    </ion-button>
+  </div>
+
+  <ion-list lines="none" *ngIf="installedApps.length > 0">
+    <div class="file-item" *ngFor="let app of installedApps; let i = index">
+      <div style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #007aff, #5856d6); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <ion-icon name="appstore-outline" style="font-size: 26px; color: white;"></ion-icon>
+      </div>
+      <div class="file-info">
+        <div class="name">{{ app.name }}</div>
+        <div class="meta">
+          <span class="status-badge" [ngClass]="app.status">{{ app.statusText }}</span>
+          {{ app.version }}
+        </div>
+        <div class="meta" style="font-size: 11px;">{{ app.bundleId }}</div>
+      </div>
+      <div class="file-action" style="display: flex; gap: 4px;">
+        <ion-button fill="clear" size="small" (click)="openApp(i)">
+          <ion-icon name="open-outline" slot="icon-only" color="primary"></ion-icon>
+        </ion-button>
+        <ion-button fill="clear" size="small" (click)="uninstallApp(i)">
+          <ion-icon name="trash-outline" slot="icon-only" color="danger"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-list>
+</ion-content>

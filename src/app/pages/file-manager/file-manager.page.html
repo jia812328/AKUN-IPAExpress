@@ -1,0 +1,101 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-button fill="clear" slot="start" (click)="goBack()" style="--padding-start: 8px;">
+      <ion-icon name="arrow-back-outline" slot="icon-only" style="font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title size="large">手机储存</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding-top">
+  <div class="page-header">
+    <h1>{{ currentPath === '/storage/emulated/0' ? '内部存储' : currentPath.split('/').pop() }}</h1>
+    <p>{{ currentPath }}</p>
+  </div>
+
+  <!-- 路径导航 -->
+  <div style="padding: 0 20px 12px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+    <ion-button fill="clear" size="small" (click)="goHome()" style="font-weight: 600; --padding-start: 4px; --padding-end: 4px;">
+      根目录
+    </ion-button>
+    <ion-icon name="chevron-forward-outline" style="font-size: 12px; color: var(--ion-color-medium);"></ion-icon>
+    <span style="font-size: 13px; color: var(--ion-color-medium);">{{ currentPath.replace('/storage/emulated/0/', '') || '/' }}</span>
+  </div>
+
+  <!-- 快捷访问 -->
+  <div style="padding: 0 20px 12px; display: flex; gap: 8px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
+    <ion-button fill="outline" size="small" (click)="navigateTo('/storage/emulated/0')" style="--border-radius: 20px; flex-shrink: 0;">
+      <ion-icon name="home-outline" slot="start"></ion-icon>
+      内部存储
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="navigateTo('/storage/emulated/0/Download')" style="--border-radius: 20px; flex-shrink: 0;">
+      <ion-icon name="download-outline" slot="start"></ion-icon>
+      下载
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="navigateTo('/storage/emulated/0/DCIM')" style="--border-radius: 20px; flex-shrink: 0;">
+      <ion-icon name="images-outline" slot="start"></ion-icon>
+      相册
+    </ion-button>
+    <ion-button fill="outline" size="small" (click)="navigateTo('/storage/emulated/0/Documents')" style="--border-radius: 20px; flex-shrink: 0;">
+      <ion-icon name="document-outline" slot="start"></ion-icon>
+      文档
+    </ion-button>
+  </div>
+
+  <!-- 搜索 -->
+  <div style="padding: 0 20px 12px;">
+    <ion-searchbar placeholder="搜索文件..." [(ngModel)]="searchQuery" (ionInput)="filterFiles()" style="--border-radius: 12px; --box-shadow: none; --background: rgba(0,0,0,0.04);"></ion-searchbar>
+  </div>
+
+  <!-- 统计 -->
+  <div class="glass-card" style="margin: 0 20px 16px; padding: 12px; display: flex; justify-content: space-around; align-items: center;">
+    <div style="text-align: center;">
+      <div style="font-size: 18px; font-weight: 700; color: #007aff;">{{ items.length }}</div>
+      <div style="font-size: 11px; color: var(--ion-color-medium);">项目</div>
+    </div>
+    <div style="width:1px; height:24px; background: rgba(0,0,0,0.05);"></div>
+    <div style="text-align: center;">
+      <div style="font-size: 18px; font-weight: 700; color: #34c759;">{{ folderCount }}</div>
+      <div style="font-size: 11px; color: var(--ion-color-medium);">文件夹</div>
+    </div>
+    <div style="width:1px; height:24px; background: rgba(0,0,0,0.05);"></div>
+    <div style="text-align: center;">
+      <div style="font-size: 18px; font-weight: 700; color: #ff9500;">{{ fileCount }}</div>
+      <div style="font-size: 11px; color: var(--ion-color-medium);">文件</div>
+    </div>
+  </div>
+
+  <!-- 加载中 -->
+  <div style="text-align: center; padding: 40px;" *ngIf="loading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p style="font-size: 13px; color: var(--ion-color-medium); margin-top: 8px;">加载中...</p>
+  </div>
+
+  <!-- 空状态 -->
+  <div class="empty-state" *ngIf="items.length === 0 && !loading">
+    <ion-icon name="folder-open-outline"></ion-icon>
+    <h3>此目录为空</h3>
+    <p>当前目录没有文件或文件夹</p>
+  </div>
+
+  <!-- 文件列表 - 点击进入文件夹，三点弹出操作菜单 -->
+  <ion-list lines="none" *ngIf="items.length > 0">
+    <div class="file-item" *ngFor="let item of filteredItems; let i = index" (click)="openItem(item)">
+      <div class="file-icon" [style.background]="item.isDir ? 'rgba(0,122,255,0.12)' : getFileColor(item.name)" [style.color]="item.isDir ? '#007aff' : getFileIconColor(item.name)">
+        <ion-icon [name]="item.isDir ? 'folder-outline' : getFileIcon(item.name)"></ion-icon>
+      </div>
+      <div class="file-info">
+        <div class="name">{{ item.name }}</div>
+        <div class="meta">
+          <span class="status-badge" [ngClass]="item.isDir ? 'info' : 'success'" style="font-size: 10px; padding: 1px 6px;">{{ item.isDir ? '文件夹' : item.ext.toUpperCase() }}</span>
+          {{ item.size }}
+        </div>
+      </div>
+      <div class="file-action" (click)="showActions($event, item, i)">
+        <ion-button fill="clear" size="small">
+          <ion-icon name="ellipsis-horizontal-outline" slot="icon-only" color="medium"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+  </ion-list>
+</ion-content>
